@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.airlines.routes.model.Airline;
+import com.airlines.routes.model.Airlines;
 import com.airlines.routes.model.City;
 import com.airlines.routes.service.AirlineService;
 
@@ -59,6 +60,16 @@ public class RoutesController {
 	    	return new ResponseEntity<List<String>>(cityList, HttpStatus.FOUND);
 	    }catch (Exception e) {
 	    	return new ResponseEntity<List<String>>(HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	@GetMapping("/airlines")
+	public ResponseEntity<List<Airlines>> getAirLineRoutes() {
+	    try {
+	    	List<Airlines> cityList=airlineService.getAirLineRoutes();
+	    	return new ResponseEntity<List<Airlines>>(cityList, HttpStatus.FOUND);
+	    }catch (Exception e) {
+	    	return new ResponseEntity<List<Airlines>>(HttpStatus.NOT_FOUND);
 		}
 	}
 }

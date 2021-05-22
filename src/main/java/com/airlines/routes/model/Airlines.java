@@ -122,5 +122,14 @@ public class Airlines {
 	public void setEquipment(String equipment) {
 		this.equipment = equipment;
 	}
+
+	@Override
+	public String toString() {
+		return "Airlines [airlineId=" + airlineId + ", airline=" + airline + ", sourceAirport=" + sourceAirport
+				+ ", sourceAirportId=" + sourceAirportId + ", destinationAirport=" + destinationAirport
+				+ ", destinationAirportId=" + destinationAirportId + ", codeshare=" + codeshare + ", stops=" + stops
+				+ ", equipment=" + equipment + "]";
+	}
+	
 	
 }

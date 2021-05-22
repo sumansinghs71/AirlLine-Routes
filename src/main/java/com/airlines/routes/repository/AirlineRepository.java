@@ -19,4 +19,7 @@ public interface AirlineRepository extends JpaRepository<Airlines, Serializable>
 	
 	@Query(value = "select city from (select b.source_airport as city,count(airline) as counts FROM airlineroutes a LEFT JOIN (SELECT source_airport FROM airlineroutes union SELECT destination_airport FROM airlineroutes) as b	ON b.source_airport=a.source_airport where a.codeshare !='Y'group by b.source_airport order by counts desc limit 10) as res;", nativeQuery = true)
 	List<String> getTopCitiesInServicing();
+	
+	@Query(value = "select * from airlineroutes", nativeQuery = true)
+	List<Airlines> getAirLineRoutes();
 }

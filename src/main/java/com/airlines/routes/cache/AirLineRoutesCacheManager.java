@@ -1,9 +1,13 @@
 package com.airlines.routes.cache;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
@@ -18,6 +22,13 @@ import com.airlines.routes.repository.AirlineRepository;
 //import java.util.concurrent.ConcurrentHashMap;
 //import java.util.function.Function;
 //import java.util.function.Predicate
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.FileCopyUtils;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class AirLineRoutesCacheManager {
@@ -29,13 +40,50 @@ public class AirLineRoutesCacheManager {
 
 	@Autowired
 	private AirlineRepository airlineRepository;
+	
+	@Autowired
+	ResourceLoader resourceLoader;
 
 	@PostConstruct
-	public void initAirlineRoutes() {
+	public void initAirlineRoutes() throws IOException {
+		List<Airlines> inputList = new ArrayList<Airlines>();
 		System.out.println("In post Construct ");
-		List<Airlines> airlines = airlineRepository.getAirLineRoutes();
-		AirLineRouteConstants.AIRLINE_ROUTES.put("data", airlines);
+		Resource resource = resourceLoader.getResource("classpath:airline-routes.csv");
+		InputStream inputStream = resource.getInputStream();
+		BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+
+		// skip the header of the csv
+		inputList = br.lines().skip(1).map(mapToItem).collect(Collectors.toList());
+		br.close();
+//		try {
+//			byte[] bdata = FileCopyUtils.copyToByteArray(inputStream);
+//			String data = new String(bdata, StandardCharsets.UTF_8);
+//			log.info(data);
+//		} catch (IOException e) {
+//			log.error("IOException", e);
+//		}
+		List<Airlines> airlines =
+				// airlineRepository.getAirLineRoutes();
+
+				AirLineRouteConstants.AIRLINE_ROUTES.put("data", inputList);
 	}
+
+	private Function<String, Airlines> mapToItem = (line) -> {
+
+		  String[] p = line.toString().split(",");
+		  Airlines item = new Airlines();
+		  item.setAirline(p[0]);
+		  item.setAirlineId(p[1]);
+		  item.setSourceAirport(p[2]);
+		  item.setSourceAirportId(p[3]);
+		  item.setDestinationAirport(p[4]);
+		  item.setDestinationAirportId(p[5]);
+		  item.setCodeshare(p[6]);
+		  item.setStops(p[7]);
+//		  item.setEquipment(p[8]);
+		  System.out.println(item.toString());
+		  return item;
+	};
 
 	public List<String> getTopAirlines() {
 		List<Airlines> airlinesList = AirLineRouteConstants.AIRLINE_ROUTES.get("data");
